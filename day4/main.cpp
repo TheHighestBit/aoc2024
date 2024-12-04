@@ -75,55 +75,17 @@ void part1(const vector<vector<char>> &matrix) {
     cout << "Part1: " << occur << endl;
 }
 
-bool isPair(const vector<pair<int, int>> &pairs, const int &y, const int &x) {
-    for (auto it = pairs.begin(); it != pairs.end(); it++) {
-        if (it->first == y && it->second == x) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 void part2(const vector<vector<char>> &matrix) {
     int occur = 0;
     int M = matrix.size();
     int N = matrix.at(0).size();
-    vector<pair<int, int>> found;
 
     for (int y = 0; y < M; y++) {
         for (int x = 0; x < N; x++) {
-            if (matrix[y][x] == 'M') {
-                if (y >= 2 && x >= 2 && checkDir(matrix, x + 1, y + 1, -1, -1)) { // Top left diag
-                    found.push_back({y, x});
-
-                    if (isPair(found, y, x - 2)) {
-                        occur++;
-                    }
-                }
-
-                if (y >= 2 && x <= M - 3 && checkDir(matrix, x - 1, y + 1, 1, -1)) { // Top right diag
-                    found.push_back({y, x});
-
-                    if (isPair(found, y - 2, x)) {
-                        occur++;
-                    }
-                }
-
-                if (y <= N - 3 && x <= M - 3 && checkDir(matrix, x - 1, y - 1, 1, 1)) { // Bottom right diag
-                    found.push_back({y, x});
-
-                    if (isPair(found, y + 2, x)) {
-                        occur++;
-                    }
-                }
-
-                if (y <= N - 3 && x >= 2 && checkDir(matrix, x + 1, y - 1, -1, 1)) { // Bottom left diag
-                    found.push_back({y, x});
-
-                    if (isPair(found, y, x - 2)) {
-                        occur++;
-                    }
+            if (matrix[y][x] == 'A' && y >= 1 && y <= M - 2 && x >= 1 && x <= N - 2) { // Since A is in the middle of both diagonals, just check those
+                if ((matrix[y - 1][x - 1] == 'M' && matrix[y + 1][x + 1] == 'S' || matrix[y - 1][x - 1] == 'S' && matrix[y + 1][x + 1] == 'M')
+                    && (matrix[y - 1][x + 1] == 'M' && matrix[y + 1][x - 1] == 'S' || matrix[y - 1][x + 1] == 'S' && matrix[y + 1][x - 1] == 'M')) {
+                    occur++;
                 }
             }
         }
@@ -133,7 +95,7 @@ void part2(const vector<vector<char>> &matrix) {
 }
 
 int main() {
-    auto const matrix = readFile();
+    const auto matrix = readFile();
 
     part1(matrix);
     part2(matrix);

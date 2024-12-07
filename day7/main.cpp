@@ -42,7 +42,7 @@ ulong concatenate(ulong i, ulong j) {
     return stoul(result);
 }
 
-bool evaluate(const vector<ulong> &values, vector<char> operators, const ulong &target, bool isConcat) {
+bool evaluate(const vector<ulong> &values, vector<char> operators, const ulong &target) {
     if (operators.size() == values.size() - 1) { // calc the result
         ulong res = values[0];
 
@@ -51,8 +51,6 @@ bool evaluate(const vector<ulong> &values, vector<char> operators, const ulong &
                 res *= values[i];
             } else if (operators[i - 1] == '+') {
                 res += values[i];
-            } else {
-                res = concatenate(res, values[i]);
             }
 
             if (res > target)
@@ -61,30 +59,12 @@ bool evaluate(const vector<ulong> &values, vector<char> operators, const ulong &
 
         return target == res;
     } else {
-        if (isConcat && values.size() > 1) {
-            auto values_cpy(values);
-
-            values_cpy[values_cpy.size() - 2] = concatenate(values_cpy[values_cpy.size() - 2], values_cpy[values_cpy.size() - 1]);
-            values_cpy.pop_back();
-
-            if (evaluate(values_cpy, operators, target, true))
-                return true;
-        }
-
         auto cpy(operators);
-        bool concatRes = false;
-
-        if (isConcat) {
-            auto cpy2(operators);
-            cpy2.push_back('|');
-
-            concatRes = evaluate(values, cpy2, target, isConcat);
-        }
 
         operators.push_back('*');
         cpy.push_back('+');
 
-        return evaluate(values, operators, target, isConcat) || evaluate(values, cpy, target, isConcat) || concatRes;
+        return evaluate(values, operators, target) || evaluate(values, cpy, target);
     }
 }
 
@@ -103,7 +83,7 @@ void part1(const vector<pair<ulong, vector<ulong>>> &in) {
     ulong res = 0;
 
     for (auto pair : in) {
-        if (evaluate(pair.second, {}, pair.first, false))
+        if (evaluate(pair.second, {}, pair.first))
             res += pair.first;
     }
 
